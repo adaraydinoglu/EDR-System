@@ -80,10 +80,14 @@ class RiskEngine:
         # 3. Path modifiers — skip for trusted processes (browsers write to temp/appdata constantly)
         is_trusted = proc_name in RiskEngine.TRUSTED_PROCESSES
         if not is_trusted and any(frag in path for frag in ["\\temp\\", "\\tmp\\", "appdata"]):
-            score += 20
-            # Executable dropped in temp is a major indicator
-            if event.event_type == EventType.FILE_CREATE and path.endswith((".exe", ".dll", ".bat", ".ps1")):
+            # Executable or script dropped in temp is a major indicator
+            suspicious_exts = (".exe", ".dll", ".bat", ".ps1", ".vbs", ".js", ".vbe", ".wsf", ".hta")
+            if event.event_type == EventType.FILE_CREATE and path.endswith(suspicious_exts):
                 score += 50
+            elif event.event_type == EventType.FILE_CREATE:
+                score += 15  # Generic file creation in monitored temp/appdata path
+            else:
+                score += 20  # Other interactions with temp/appdata
 
         # 4. Contextual whitelisting for trusted processes
         # Trusted processes (browsers, system apps) only get penalised

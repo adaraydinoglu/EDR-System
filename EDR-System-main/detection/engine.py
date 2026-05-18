@@ -45,14 +45,30 @@ class DetectionEngine:
         cache_manager.add_recent_event(event)
 
         # 3. Evaluate every stateless JSON rule
+        matched_any = False
         for rule in RULES:
             try:
                 if rule["match"](event):
                     self._trigger_alert(rule, event)
+                    matched_any = True
             except Exception as e:
                 logger.error(
                     f"DetectionEngine: Error in rule '{rule.get('name')}': {e}"
                 )
+
+        # 4. Fallback Anomaly Detection
+        # If no specific rule matched but the event/process has a high risk score, trigger an anomaly
+        if not matched_any and event.severity in ["MEDIUM", "HIGH", "CRITICAL"]:
+            anomaly_rule = {
+                "name": "Behavioral_Anomaly_Detected",
+                "severity": event.severity,
+                "confidence": "LOW",
+                "tactic": "Unknown",
+                "technique": "Unknown",
+                "score": event_risk,
+                "technique_name": "Suspicious Behavior"
+            }
+            self._trigger_alert(anomaly_rule, event)
 
     # ── Alert construction ───────────────────────────────────────────────────
 

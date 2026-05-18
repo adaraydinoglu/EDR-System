@@ -98,7 +98,7 @@ class AIEngine:
                 alert = self.alert_queue.get(timeout=2)
                 self._evaluate_alert(alert)
                 self.alert_queue.task_done()
-                time.sleep(1)   # gentle rate-limiting between evaluations
+                time.sleep(2)   # gentler rate-limiting between evaluations to avoid 429
             except queue.Empty:
                 continue
             except Exception as e:
@@ -190,7 +190,7 @@ class AIEngine:
 
         # ── Call API with retry ───────────────────────────────────────────────
         last_err = None
-        for attempt in range(3):
+        for attempt in range(5):
             try:
                 response = self.client.models.generate_content(
                     model="gemini-1.5-flash",
@@ -209,10 +209,18 @@ class AIEngine:
                 return
             except Exception as e:
                 last_err = e
-                logger.warning(f"[AIEngine] Attempt {attempt + 1}/3 failed: {e}")
-                time.sleep(2 ** attempt)   # 1 s, 2 s, 4 s
+                # Status 503 Service Unavailable is common when overloaded
+                err_msg = str(e).lower()
+                if "503" in err_msg or "429" in err_msg or "quota" in err_msg:
+                    logger.warning(f"[AIEngine] Server busy (503/429) on attempt {attempt + 1}/5. Retrying...")
+                else:
+                    logger.warning(f"[AIEngine] Attempt {attempt + 1}/5 failed: {e}")
+                
+                # Exponential backoff: 2s, 4s, 8s, 16s, 32s
+                backoff_time = 2 ** (attempt + 1)
+                time.sleep(backoff_time)
 
-        logger.error(f"[AIEngine] All retries failed for '{alert.rule_name}': {last_err}")
+        logger.error(f"[AIEngine] All 5 retries failed for '{alert.rule_name}': {last_err}")
 
     # ── Apply decision ────────────────────────────────────────────────────────
 

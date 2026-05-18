@@ -89,7 +89,7 @@ WMI_ENABLED = True
 # ======================
 # RESPONSE
 # ======================
-RESPONSE_ENABLED = True
+RESPONSE_ENABLED = False
 QUARANTINE_ENABLED = False  # Placeholder flag for future features
 
 # ======================
@@ -97,4 +97,4 @@ QUARANTINE_ENABLED = False  # Placeholder flag for future features
 # ======================
 AI_EVALUATION_ENABLED = True
 GEMINI_API_KEY = "AIzaSyAg5uKFaLn_jlId_-JR0-8Njbgzjkz6hFk"
-AI_AUTO_RESPONSE = True
+AI_AUTO_RESPONSE = False

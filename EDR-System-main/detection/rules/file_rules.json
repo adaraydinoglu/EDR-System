@@ -24,5 +24,17 @@
     "severity": "HIGH",
     "confidence": "HIGH",
     "score": 70
+  },
+  {
+    "rule_name": "Suspicious_File_Creation_Temp",
+    "description": "A file was created in a temporary directory.",
+    "event_type": "FILE_CREATE",
+    "path_contains": ["\\temp\\", "\\tmp\\"],
+    "tactic": "Execution",
+    "technique": "T1059",
+    "mitre_id": "T1059",
+    "severity": "MEDIUM",
+    "confidence": "LOW",
+    "score": 15
   }
 ]
