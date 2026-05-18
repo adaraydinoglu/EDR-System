@@ -36,8 +36,13 @@ class RiskEngine:
     # suspicious commandline, will still score full risk.
     TRUSTED_PROCESSES: set = {
         "explorer.exe", "svchost.exe", "services.exe",
-        "brave.exe", "chrome.exe", "firefox.exe", "msedge.exe",
+        "brave.exe", "chrome.exe", "chromium.exe", "firefox.exe", "msedge.exe",
+        "opera.exe", "opera_crashreporter.exe", "opera_autoupdate.exe",
+        "iexplore.exe",
         "code.exe", "devenv.exe", "winlogon.exe", "lsass.exe",
+        "taskhostw.exe", "sihost.exe", "ctfmon.exe", "dllhost.exe",
+        "spotify.exe", "discord.exe", "teams.exe",
+        "onedrive.exe", "dropbox.exe", "git.exe", "node.exe",
     }
 
     # ── Suspicious commandline tokens and their risk additions ──────────────
@@ -72,26 +77,24 @@ class RiskEngine:
             if any(tok in cmdline for tok in tokens):
                 score += risk_delta
 
-        # 3. Path modifiers
-        if any(frag in path for frag in ["\\temp\\", "\\tmp\\", "appdata"]):
+        # 3. Path modifiers — skip for trusted processes (browsers write to temp/appdata constantly)
+        is_trusted = proc_name in RiskEngine.TRUSTED_PROCESSES
+        if not is_trusted and any(frag in path for frag in ["\\temp\\", "\\tmp\\", "appdata"]):
             score += 20
             # Executable dropped in temp is a major indicator
             if event.event_type == EventType.FILE_CREATE and path.endswith((".exe", ".dll", ".bat", ".ps1")):
                 score += 50
 
-        # 4. Contextual whitelisting
-        # A trusted process gets a discount ONLY when it has no suspicious
-        # commandline, is not in a suspicious path, and is a PROCESS_CREATE
-        # with no special arguments — i.e. genuinely normal invocation.
-        if proc_name in RiskEngine.TRUSTED_PROCESSES:
-            is_clean = (
-                event.event_type == EventType.PROCESS_CREATE
-                and score == 0           # nothing suspicious detected yet
-                and not cmdline.strip()  # no commandline at all
+        # 4. Contextual whitelisting for trusted processes
+        # Trusted processes (browsers, system apps) only get penalised
+        # when a genuinely suspicious cmdline token was found.
+        # Pure path-based score for trusted apps is capped to LOW territory.
+        if is_trusted:
+            has_bad_cmd = any(
+                tok in cmdline for _, toks in RiskEngine.CMDLINE_RISKS for tok in toks
             )
-            if is_clean:
-                score = max(0, score - 5)  # small baseline discount
-            # If score > 0 the process is behaving suspiciously — no discount.
+            if not has_bad_cmd:
+                score = min(score, 10)   # cap to LOW if no suspicious cmdline
 
         event.risk_score = score
         event.severity   = RiskEngine.get_severity_for_score(score)
