@@ -192,6 +192,11 @@ class MainWindow(QMainWindow):
             cleanup_manager.stop()
         except Exception:
             pass
+        try:
+            from core.ai_engine import ai_engine
+            ai_engine.stop()
+        except Exception:
+            pass
 
     def _set_stopped_ui(self):
         self.start_btn.setEnabled(True)
@@ -209,6 +214,7 @@ class MainWindow(QMainWindow):
             from detection.engine import DetectionEngine
             from detection.correlation import CorrelationEngine
             from response.responder import Responder
+            from core.ai_engine import ai_engine
             from collectors.wmi_monitor import wmi_monitor
             from collectors.filesystem_monitor import filesystem_monitor
             from collectors.task_monitor import task_monitor
@@ -230,6 +236,7 @@ class MainWindow(QMainWindow):
             detection_engine = DetectionEngine()
             correlation_engine = CorrelationEngine()
             responder       = Responder()
+            ai_engine.start()
 
             # 4. Toplayıcılar
             wmi_monitor.start()

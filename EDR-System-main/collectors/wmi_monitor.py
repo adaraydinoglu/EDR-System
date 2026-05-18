@@ -20,6 +20,7 @@ class WMIMonitor:
 
     def start(self):
         self.running = True
+        self.threads = []
         t1 = threading.Thread(target=self._watch_process_starts, daemon=True, name="WMI_ProcessStart")
         t2 = threading.Thread(target=self._watch_process_stops, daemon=True, name="WMI_ProcessStop")
         self.threads.extend([t1, t2])

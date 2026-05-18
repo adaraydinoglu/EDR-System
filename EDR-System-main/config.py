@@ -9,7 +9,12 @@ import logging
 # ======================
 # CORE SYSTEM
 # ======================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import sys
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ALERTS_DIR = os.path.join(BASE_DIR, "alerts")
 STORAGE_DIR = os.path.join(BASE_DIR, "storage")
 
@@ -86,3 +91,10 @@ WMI_ENABLED = True
 # ======================
 RESPONSE_ENABLED = True
 QUARANTINE_ENABLED = False  # Placeholder flag for future features
+
+# ======================
+# AI ANALYST
+# ======================
+AI_EVALUATION_ENABLED = True
+GEMINI_API_KEY = "AIzaSyAg5uKFaLn_jlId_-JR0-8Njbgzjkz6hFk"
+AI_AUTO_RESPONSE = True

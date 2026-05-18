@@ -29,6 +29,7 @@ class AlertSchema:
     timestamp:      float = field(default_factory=time.time)
     correlation_id: str  = ""
     ai_explanation: str  = ""
+    ai_analysis:    Dict[str, Any] = field(default_factory=dict)
     # ── Incident grouping ─────────────────────────────────────────────────────
     incident_id:    str  = ""     # Shared ID for all alerts in one incident
     incident_name:  str  = ""     # Human-readable incident name
@@ -58,6 +59,7 @@ class AlertSchema:
             "parent_process":   self.trigger_event.parent_name  if self.trigger_event else self.parent_process,
             "commandline":      self.trigger_event.cmdline       if self.trigger_event else "",
             "ai_explanation":   self.ai_explanation,
+            "ai_analysis":      self.ai_analysis,
             "ancestry_chain":   self.ancestry_chain,
             "network_info":     self.network_info,
             "trigger_event":    self.trigger_event.to_dict() if self.trigger_event else {},

@@ -295,3 +295,4 @@ class IncidentManager:
                         k: v for k, v in self._pid_to_iid.items() if v != iid
                     }
         return None
+incident_manager = IncidentManager()

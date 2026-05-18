@@ -35,6 +35,7 @@ class FileSystemMonitor:
         self.handler = EDRFileSystemEventHandler()
 
     def start(self):
+        self.observer = Observer()
         paths_to_monitor = []
         for path in MONITORED_PATHS:
             if os.path.exists(path):
