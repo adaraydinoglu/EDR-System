@@ -33,17 +33,23 @@ class EventSchema:
     # Added for correlation linking
     event_id: str = ""
     
+    # Added for risk and severity
+    risk_score: int = 0
+    severity: str = "LOW"
+    
     def to_dict(self):
         return {
             "event_id": self.event_id,
-            "event_type": self.event_type.name,
+            "event_type": self.event_type.name.lower(),
             "timestamp": self.timestamp,
+            "process_name": self.process_name,
             "pid": self.process_id.pid if self.process_id else None,
-            "process": self.process_name,
+            "parent_process": self.parent_name,
             "parent_pid": self.parent_process_id.pid if self.parent_process_id else None,
-            "parent": self.parent_name,
-            "cmdline": self.cmdline,
+            "commandline": self.cmdline,
             "path": self.path,
             "user": self.user,
+            "risk_score": self.risk_score,
+            "severity": self.severity,
             "details": self.details
         }

@@ -1,15 +1,12 @@
 from core.cache_manager import cache_manager
 from models.process_identity import ProcessIdentity
-from config import SCORE_DECAY_RATE, CRITICAL_SCORE_THRESHOLD
-from core.logger import logger
+from config import SCORE_DECAY_RATE
+from core.risk_engine import RiskEngine
 
 class ScoringEngine:
     @staticmethod
     def add_score(identity: ProcessIdentity, score: int) -> int:
-        if not identity:
-            return 0
-        total = cache_manager.add_score(identity, score)
-        logger.debug(f"Added {score} to {identity}. Total: {total}")
+        total, _ = RiskEngine.update_cumulative_risk(identity, score)
         return total
 
     @staticmethod

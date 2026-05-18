@@ -13,41 +13,41 @@ from datetime import datetime
 MAX_ITEMS = 500
 
 EVENT_ICONS = {
-    EventType.PROCESS_CREATE:       "🟢",
-    EventType.PROCESS_TERMINATE:    "🔴",
-    EventType.FILE_CREATE:          "📄",
-    EventType.FILE_MODIFY:          "✏️",
-    EventType.FILE_DELETE:          "🗑️",
-    EventType.NETWORK_CONNECT:      "🌐",
-    EventType.TASK_CREATE:          "⏰",
-    EventType.REGISTRY_MODIFY:      "🔧",
-    EventType.PROCESS_ACCESS:       "👁️",
-    EventType.CREATE_REMOTE_THREAD: "💉",
-    EventType.DLL_LOAD:             "📦",
+    "process_create":       "🟢",
+    "process_terminate":    "🔴",
+    "file_create":          "📄",
+    "file_modify":          "✏️",
+    "file_delete":          "🗑️",
+    "network_connect":      "🌐",
+    "task_create":          "⏰",
+    "registry_modify":      "🔧",
+    "process_access":       "👁️",
+    "create_remote_thread": "💉",
+    "dll_load":             "📦",
 }
 
 EVENT_COLORS = {
-    EventType.CREATE_REMOTE_THREAD: "#ff6b6b",
-    EventType.PROCESS_ACCESS:       "#ffa07a",
-    EventType.NETWORK_CONNECT:      "#87ceeb",
-    EventType.PROCESS_CREATE:       "#90ee90",
-    EventType.PROCESS_TERMINATE:    "#ff8888",
-    EventType.FILE_CREATE:          "#d8d8a0",
-    EventType.TASK_CREATE:          "#ffcc44",
+    "create_remote_thread": "#ff6b6b",
+    "process_access":       "#ffa07a",
+    "network_connect":      "#87ceeb",
+    "process_create":       "#90ee90",
+    "process_terminate":    "#ff8888",
+    "file_create":          "#d8d8a0",
+    "task_create":          "#ffcc44",
 }
 
 EVENT_NAMES_TR = {
-    EventType.PROCESS_CREATE:       "Süreç Oluşturma",
-    EventType.PROCESS_TERMINATE:    "Süreç Sonlandırma",
-    EventType.FILE_CREATE:          "Dosya Oluşturma",
-    EventType.FILE_MODIFY:          "Dosya Değiştirme",
-    EventType.FILE_DELETE:          "Dosya Silme",
-    EventType.NETWORK_CONNECT:      "Ağ Bağlantısı",
-    EventType.TASK_CREATE:          "Görev Oluşturma",
-    EventType.REGISTRY_MODIFY:      "Kayıt Değişikliği",
-    EventType.PROCESS_ACCESS:       "Süreç Erişimi",
-    EventType.CREATE_REMOTE_THREAD: "Uzak Thread Oluşturma",
-    EventType.DLL_LOAD:             "DLL Yükleme",
+    "process_create":       "Süreç Oluşturma",
+    "process_terminate":    "Süreç Sonlandırma",
+    "file_create":          "Dosya Oluşturma",
+    "file_modify":          "Dosya Değiştirme",
+    "file_delete":          "Dosya Silme",
+    "network_connect":      "Ağ Bağlantısı",
+    "task_create":          "Görev Oluşturma",
+    "registry_modify":      "Kayıt Değişikliği",
+    "process_access":       "Süreç Erişimi",
+    "create_remote_thread": "Uzak Thread Oluşturma",
+    "dll_load":             "DLL Yükleme",
 }
 
 
@@ -67,8 +67,8 @@ class ProcessFeed(QWidget):
         filter_row.addWidget(QLabel("Olay Filtresi:"))
         self.filter_combo = QComboBox()
         self.filter_combo.addItem("Tümü", None)
-        for et in EventType:
-            self.filter_combo.addItem(EVENT_NAMES_TR.get(et, et.name), et)
+        for et in EVENT_NAMES_TR.keys():
+            self.filter_combo.addItem(EVENT_NAMES_TR.get(et, et), et)
         self.filter_combo.currentIndexChanged.connect(self._apply_filter)
         filter_row.addWidget(self.filter_combo)
         filter_row.addStretch()
@@ -79,27 +79,30 @@ class ProcessFeed(QWidget):
         self.list_widget.setFont(mono)
         layout.addWidget(self.list_widget)
 
-    def add_event(self, event):
-        self._all_events.append(event)
+    def add_event(self, event_dict):
+        self._all_events.append(event_dict)
         if len(self._all_events) > MAX_ITEMS:
             self._all_events.pop(0)
 
         current_filter = self.filter_combo.currentData()
-        if current_filter is None or event.event_type == current_filter:
-            self._add_item_to_list(event)
+        event_type = event_dict.get("event_type", "")
+        if current_filter is None or event_type == current_filter:
+            self._add_item_to_list(event_dict)
 
-    def _add_item_to_list(self, event):
+    def _add_item_to_list(self, event_dict):
         if self.list_widget.count() >= MAX_ITEMS:
             self.list_widget.takeItem(0)
 
-        time_str  = datetime.fromtimestamp(event.timestamp).strftime("%H:%M:%S")
-        icon      = EVENT_ICONS.get(event.event_type, "•")
-        type_name = EVENT_NAMES_TR.get(event.event_type, event.event_type.name)
-        proc      = event.process_name or "-"
+        event_type = event_dict.get("event_type", "")
+        timestamp = event_dict.get("timestamp", 0)
+        time_str  = datetime.fromtimestamp(timestamp).strftime("%H:%M:%S")
+        icon      = EVENT_ICONS.get(event_type, "•")
+        type_name = EVENT_NAMES_TR.get(event_type, event_type)
+        proc      = event_dict.get("process_name", "-") or "-"
 
         text = f"{time_str}  {icon}  {type_name:<25}  {proc}"
         item = QListWidgetItem(text)
-        color = EVENT_COLORS.get(event.event_type, "#a0a0b0")
+        color = EVENT_COLORS.get(event_type, "#a0a0b0")
         item.setForeground(QColor(color))
         self.list_widget.addItem(item)
         self.list_widget.scrollToBottom()
@@ -107,6 +110,7 @@ class ProcessFeed(QWidget):
     def _apply_filter(self):
         self.list_widget.clear()
         current_filter = self.filter_combo.currentData()
-        for event in self._all_events:
-            if current_filter is None or event.event_type == current_filter:
-                self._add_item_to_list(event)
+        for event_dict in self._all_events:
+            event_type = event_dict.get("event_type", "")
+            if current_filter is None or event_type == current_filter:
+                self._add_item_to_list(event_dict)

@@ -1,0 +1,28 @@
+[
+  {
+    "rule_name": "Ransomware_File_Extension",
+    "description": "Multiple files created with ransomware-known extensions.",
+    "event_type": "FILE_CREATE",
+    "file_extension_in": [".encrypted", ".locked", ".crypt", ".wncry", ".ryk", ".maze"],
+    "min_occurrences": 3,
+    "tactic": "Impact",
+    "technique": "T1486",
+    "mitre_id": "T1486",
+    "severity": "CRITICAL",
+    "confidence": "HIGH",
+    "score": 100
+  },
+  {
+    "rule_name": "Executable_Written_To_Temp",
+    "description": "An executable file was written to a temp directory.",
+    "event_type": "FILE_CREATE",
+    "path_contains": ["\\temp\\", "\\tmp\\"],
+    "file_extension_in": [".exe", ".dll", ".bat", ".ps1", ".vbs"],
+    "tactic": "Defense Evasion",
+    "technique": "T1036",
+    "mitre_id": "T1036",
+    "severity": "HIGH",
+    "confidence": "HIGH",
+    "score": 70
+  }
+]

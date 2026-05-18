@@ -1,0 +1,42 @@
+[
+  {
+    "rule_name": "Browser_Spawning_Shell",
+    "description": "A browser spawned a shell — common in drive-by download attacks.",
+    "event_type": "PROCESS_CREATE",
+    "process_name_in": ["powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe"],
+    "parent_name_in": ["brave.exe", "chrome.exe", "firefox.exe", "msedge.exe", "iexplore.exe"],
+    "tactic": "Execution",
+    "technique": "T1059",
+    "mitre_id": "T1059",
+    "severity": "CRITICAL",
+    "confidence": "HIGH",
+    "score": 80
+  },
+  {
+    "rule_name": "Nested_Shell_Evasion",
+    "description": "A shell spawned another shell with encoded commands — layered evasion.",
+    "event_type": "PROCESS_CREATE",
+    "process_name_in": ["powershell.exe", "cmd.exe"],
+    "parent_name_in": ["powershell.exe", "cmd.exe"],
+    "commandline_contains": ["-enc", "-encodedcommand", "/c powershell"],
+    "tactic": "Defense Evasion",
+    "technique": "T1027",
+    "mitre_id": "T1027",
+    "severity": "CRITICAL",
+    "confidence": "HIGH",
+    "score": 100
+  },
+  {
+    "rule_name": "Script_Interpreter_From_Office",
+    "description": "Script interpreter spawned from Office — macro execution pattern.",
+    "event_type": "PROCESS_CREATE",
+    "process_name_in": ["wscript.exe", "cscript.exe", "mshta.exe"],
+    "parent_name_in": ["winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe", "onenote.exe"],
+    "tactic": "Execution",
+    "technique": "T1059",
+    "mitre_id": "T1059",
+    "severity": "CRITICAL",
+    "confidence": "HIGH",
+    "score": 90
+  }
+]

@@ -16,12 +16,12 @@ STORAGE_DIR = os.path.join(BASE_DIR, "storage")
 os.makedirs(ALERTS_DIR, exist_ok=True)
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
-# ======================
-# LOGGING
-# ======================
+LOG_DIR = os.path.join(STORAGE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
 LOG_LEVEL = logging.INFO
-LOG_FILE = os.path.join(ALERTS_DIR, "edr_system.log")
-JSON_LOG_FILE = os.path.join(ALERTS_DIR, "alerts.json")  # Alias for ALERT_LOG_PATH
+LOG_FILE = os.path.join(LOG_DIR, "edr_system.json")
+JSON_LOG_FILE = os.path.join(LOG_DIR, "alerts.json")  # Alias for ALERT_LOG_PATH
 ALERT_LOG_PATH = JSON_LOG_FILE
 JSON_LOGGING = True
 

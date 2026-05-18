@@ -91,11 +91,13 @@ class StatsWidget(QWidget):
         self.card_critical = StatCard("Kritik Alarm",  "0", "#3a0000", "#ff4444")
         self.card_high     = StatCard("Yüksek Alarm",  "0", "#3a1800", "#ff8844")
         self.card_events   = StatCard("Toplam Olay",   "0", "#0a2a0a", "#44cc88")
+        self.card_procs    = StatCard("Aktif Süreçler", "0", "#2a0a2a", "#cc44cc")
 
         grid.addWidget(self.card_total,    0, 0)
         grid.addWidget(self.card_critical, 0, 1)
         grid.addWidget(self.card_high,     0, 2)
         grid.addWidget(self.card_events,   0, 3)
+        grid.addWidget(self.card_procs,    0, 4)
         layout.addLayout(grid)
 
         # ── Top Rules ────────────────────────────────────
@@ -111,20 +113,38 @@ class StatsWidget(QWidget):
 
         layout.addStretch()
 
+        self._active_pids = set()
+
     # ── Public slots ──────────────────────────────────────
-    def on_alert(self, alert):
+    def on_alert(self, alert_dict):
+        severity = alert_dict.get("severity", "MEDIUM")
+        rule_name = alert_dict.get("rule_name", "Unknown")
+
         self._counters["total"] += 1
-        self._counters[alert.severity] += 1
-        self._counters[f"rule__{alert.rule_name}"] += 1
+        self._counters[severity] += 1
+        self._counters[f"rule__{rule_name}"] += 1
 
         self.card_total.set_value(self._counters["total"])
         self.card_critical.set_value(self._counters["CRITICAL"])
         self.card_high.set_value(self._counters["HIGH"])
-        self._refresh_rule(alert.rule_name)
+        self._refresh_rule(rule_name)
 
-    def on_event(self):
+    def on_event(self, event_dict):
         self._counters["events"] += 1
         self.card_events.set_value(self._counters["events"])
+
+        # Track active processes based on PROCESS_CREATE and PROCESS_TERMINATE
+        event_type = event_dict.get("event_type")
+        details = event_dict.get("details", {})
+        pid = event_dict.get("process_id", {}).get("pid") if event_dict.get("process_id") else None
+
+        if pid:
+            if event_type == 1: # EventType.PROCESS_CREATE
+                self._active_pids.add(pid)
+            elif event_type == 2: # EventType.PROCESS_TERMINATE
+                self._active_pids.discard(pid)
+            
+            self.card_procs.set_value(len(self._active_pids))
 
     def _refresh_rule(self, rule_name: str):
         count = self._counters[f"rule__{rule_name}"]

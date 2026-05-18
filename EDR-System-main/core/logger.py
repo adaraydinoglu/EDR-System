@@ -2,6 +2,18 @@ import logging
 import json
 import logging.handlers
 from config import LOG_FILE, JSON_LOG_FILE, LOG_LEVEL
+import time
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": time.time(),
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "module": record.module,
+            "funcName": record.funcName
+        }
+        return json.dumps(log_record)
 
 class EDRLogger:
     _instance = None
@@ -27,7 +39,7 @@ class EDRLogger:
             LOG_FILE, maxBytes=5*1024*1024, backupCount=3
         )
         file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(console_format)
+        file_handler.setFormatter(JsonFormatter())
 
         self.logger.addHandler(console_handler)
         self.logger.addHandler(file_handler)

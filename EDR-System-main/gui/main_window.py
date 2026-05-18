@@ -90,13 +90,20 @@ class MainWindow(QMainWindow):
         # ── Sekmeler ─────────────────────────────────────
         self.tabs = QTabWidget()
 
+        from gui.process_tree import ProcessTree
+        from gui.attack_timeline import AttackTimeline
+        
         self.alert_tab   = AlertTable()
         self.process_tab = ProcessFeed()
         self.stats_tab   = StatsWidget()
+        self.tree_tab    = ProcessTree()
+        self.timeline_tab = AttackTimeline()
 
-        self.tabs.addTab(self.alert_tab,   "🔴  Alarmlar")
-        self.tabs.addTab(self.process_tab, "📋  Süreç Akışı")
         self.tabs.addTab(self.stats_tab,   "📊  İstatistikler")
+        self.tabs.addTab(self.alert_tab,   "🔴  Alarmlar")
+        self.tabs.addTab(self.timeline_tab, "🛡️  Saldırı Çizelgesi")
+        self.tabs.addTab(self.tree_tab,    "🌳  Süreç Ağacı")
+        self.tabs.addTab(self.process_tab, "📋  Canlı Akış")
 
         root_layout.addWidget(self.tabs)
 
@@ -113,28 +120,37 @@ class MainWindow(QMainWindow):
     def _connect_bridge(self):
         bridge.new_alert.connect(self._on_alert)
         bridge.new_event.connect(self._on_event)
+        bridge.new_incident.connect(self._on_incident)
 
-    @pyqtSlot(object)
-    def _on_alert(self, alert):
+    @pyqtSlot(dict)
+    def _on_alert(self, alert_dict):
         self._alert_count += 1
-        self.alert_tab.add_alert(alert)
-        self.stats_tab.on_alert(alert)
+        self.stats_tab.on_alert(alert_dict)
+        # Standalone alert forwarded to timeline (incidents are routed via _on_incident)
+        self.timeline_tab.add_alert(alert_dict)
         self._update_status_bar()
 
-        # Alarm sekmesini ışıldatmak için başlığı güncelle
-        self.tabs.setTabText(0, f"🔴  Alarmlar ({self._alert_count})")
+        # CRITICAL tray notification
+        if alert_dict.get("severity") == "CRITICAL":
+            trigger = alert_dict.get("trigger_event", {})
+            proc = trigger.get("process_name", "-") if trigger else "-"
+            self.tray.notify_critical(alert_dict.get("rule_name", "Bilinmeyen Kural"), proc)
 
-        # CRITICAL ise bildirim gönder
-        if alert.severity == "CRITICAL":
-            proc = alert.trigger_event.process_name if alert.trigger_event else "-"
-            self.tray.notify_critical(alert.rule_name, proc)
-
-    @pyqtSlot(object)
-    def _on_event(self, event):
+    @pyqtSlot(dict)
+    def _on_event(self, event_dict):
         self._event_count += 1
-        self.process_tab.add_event(event)
-        self.stats_tab.on_event()
+        self.process_tab.add_event(event_dict)
+        self.stats_tab.on_event(event_dict)
+        self.tree_tab.add_event(event_dict)
         self._update_status_bar()
+
+    @pyqtSlot(dict)
+    def _on_incident(self, incident_dict):
+        self.timeline_tab.add_incident(incident_dict)
+        self.alert_tab.add_incident(incident_dict)
+        
+        # Update tab badge based on incident count
+        self.tabs.setTabText(1, f"🔴  İncidentler ({self.alert_tab.count})")
 
     def _update_status_bar(self):
         now = datetime.now().strftime("%H:%M:%S")
@@ -191,6 +207,7 @@ class MainWindow(QMainWindow):
             from core.cleanup_manager import cleanup_manager
             from detection.sigma_engine import SigmaEngine
             from detection.engine import DetectionEngine
+            from detection.correlation import CorrelationEngine
             from response.responder import Responder
             from collectors.wmi_monitor import wmi_monitor
             from collectors.filesystem_monitor import filesystem_monitor
@@ -211,6 +228,7 @@ class MainWindow(QMainWindow):
             # 3. Detection motorları
             sigma_engine    = SigmaEngine()
             detection_engine = DetectionEngine()
+            correlation_engine = CorrelationEngine()
             responder       = Responder()
 
             # 4. Toplayıcılar
