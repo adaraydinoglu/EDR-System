@@ -1,6 +1,9 @@
-# Build, log ve HTML dosyalarını dil istatistiklerinden muaf tut
+# Python dışındaki tüm yapılandırma, log ve derleme dosyalarını yok say
+*.spec linguist-language=Python
+*.toc linguist-documentation
+*.pkg linguist-documentation
 build/** linguist-documentation
 dist/** linguist-documentation
-*.html linguist-documentation
 *.json linguist-documentation
 *.log linguist-documentation
+*.html linguist-documentation
