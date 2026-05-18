@@ -1,0 +1,6 @@
+# Build, log ve HTML dosyalarını dil istatistiklerinden muaf tut
+build/** linguist-documentation
+dist/** linguist-documentation
+*.html linguist-documentation
+*.json linguist-documentation
+*.log linguist-documentation
