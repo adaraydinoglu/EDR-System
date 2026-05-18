@@ -1,0 +1,63 @@
+2026-05-18 02:55:28,208 - [INFO] - Initializing Detection Analytics Platform (Phase 2)...
+2026-05-18 02:55:28,209 - [INFO] - Event Bus dispatchers started.
+2026-05-18 02:55:28,209 - [INFO] - Cleanup Manager started.
+2026-05-18 02:55:28,210 - [INFO] - Starting Telemetry Collectors...
+2026-05-18 02:55:28,211 - [INFO] - WMI Process Monitor started.
+2026-05-18 02:55:28,212 - [INFO] - Filesystem Monitor started. Watching: ['C:\\Users\\GKHAN~1\\AppData\\Local\\Temp', 'C:\\Users\\gökhan\\Downloads', 'C:\\Users\\gökhan\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup', 'C:\\Users\\gökhan\\AppData\\Roaming']
+2026-05-18 02:55:28,213 - [INFO] - Task Monitor started (Event Log Watcher).
+2026-05-18 02:55:28,213 - [INFO] - Sysmon Monitor started.
+2026-05-18 02:55:28,216 - [INFO] - Network Monitor started (psutil polling layer).
+2026-05-18 02:55:28,217 - [INFO] - EDR Platform is running. Monitoring active.
+2026-05-18 02:55:38,307 - [INFO] - Shutting down EDR Platform...
+2026-05-18 02:55:38,308 - [INFO] - Shutdown complete.
+2026-05-18 02:55:41,285 - [INFO] - Initializing Detection Analytics Platform (Phase 2)...
+2026-05-18 02:55:41,286 - [INFO] - Event Bus dispatchers started.
+2026-05-18 02:55:41,286 - [INFO] - Cleanup Manager started.
+2026-05-18 02:55:41,287 - [INFO] - Starting Telemetry Collectors...
+2026-05-18 02:55:41,288 - [INFO] - WMI Process Monitor started.
+2026-05-18 02:55:41,290 - [INFO] - Filesystem Monitor started. Watching: ['C:\\Users\\GKHAN~1\\AppData\\Local\\Temp', 'C:\\Users\\gökhan\\Downloads', 'C:\\Users\\gökhan\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup', 'C:\\Users\\gökhan\\AppData\\Roaming']
+2026-05-18 02:55:41,290 - [INFO] - Task Monitor started (Event Log Watcher).
+2026-05-18 02:55:41,290 - [INFO] - Sysmon Monitor started.
+2026-05-18 02:55:41,292 - [INFO] - Network Monitor started (psutil polling layer).
+2026-05-18 02:55:41,293 - [INFO] - EDR Platform is running. Monitoring active.
+2026-05-18 02:56:11,289 - [INFO] - Database retention cleanup completed.
+2026-05-18 02:56:17,439 - [INFO] - Shutting down EDR Platform...
+2026-05-18 02:56:17,439 - [INFO] - Shutdown complete.
+2026-05-18 02:57:27,673 - [INFO] - Initializing Detection Analytics Platform (Phase 2)...
+2026-05-18 02:57:27,674 - [INFO] - Event Bus dispatchers started.
+2026-05-18 02:57:27,675 - [INFO] - Cleanup Manager started.
+2026-05-18 02:57:27,676 - [INFO] - Starting Telemetry Collectors...
+2026-05-18 02:57:27,676 - [INFO] - WMI Process Monitor started.
+2026-05-18 02:57:27,678 - [INFO] - Filesystem Monitor started. Watching: ['C:\\Users\\GKHAN~1\\AppData\\Local\\Temp', 'C:\\Users\\gökhan\\Downloads', 'C:\\Users\\gökhan\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup', 'C:\\Users\\gökhan\\AppData\\Roaming']
+2026-05-18 02:57:27,678 - [INFO] - Task Monitor started (Event Log Watcher).
+2026-05-18 02:57:27,679 - [INFO] - Sysmon Monitor started.
+2026-05-18 02:57:27,681 - [INFO] - Network Monitor started (psutil polling layer).
+2026-05-18 02:57:27,682 - [INFO] - EDR Platform is running. Monitoring active.
+2026-05-18 02:57:29,835 - [INFO] - Shutting down EDR Platform...
+2026-05-18 02:57:29,835 - [INFO] - Shutdown complete.
+2026-05-18 12:23:29,828 - [INFO] - GUI: Backend baþlatýldý.
+2026-05-18 12:23:30,030 - [ERROR] - Backend hatasý: No module named 'wmi'
+2026-05-18 12:23:44,586 - [INFO] - GUI: Backend durduruldu.
+2026-05-18 12:24:07,756 - [INFO] - GUI: Backend baþlatýldý.
+2026-05-18 12:24:08,018 - [INFO] - Event Bus dispatchers started.
+2026-05-18 12:24:08,019 - [INFO] - Cleanup Manager started.
+2026-05-18 12:24:08,020 - [INFO] - WMI Process Monitor started.
+2026-05-18 12:24:08,025 - [INFO] - Filesystem Monitor started. Watching: ['C:\\Users\\LENOVO\\AppData\\Local\\Temp', 'C:\\Users\\LENOVO\\Downloads', 'C:\\Users\\LENOVO\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup', 'C:\\Users\\LENOVO\\AppData\\Roaming']
+2026-05-18 12:24:08,026 - [INFO] - Task Monitor started (Event Log Watcher).
+2026-05-18 12:24:08,027 - [INFO] - Sysmon Monitor started.
+2026-05-18 12:24:08,033 - [INFO] - Network Monitor started (psutil polling layer).
+2026-05-18 12:24:08,033 - [INFO] - Tüm toplayýcýlar baþlatýldý.
+2026-05-18 12:24:16,497 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:19,501 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:22,505 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:25,509 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:28,513 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:30,370 - [INFO] - GUI: Backend durduruldu.
+2026-05-18 12:24:31,101 - [INFO] - GUI: Backend baþlatýldý.
+2026-05-18 12:24:31,102 - [INFO] - Event Bus dispatchers started.
+2026-05-18 12:24:31,102 - [INFO] - Cleanup Manager started.
+2026-05-18 12:24:31,103 - [ERROR] - Backend hatasý: threads can only be started once
+2026-05-18 12:24:31,516 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:34,519 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:37,524 - [ERROR] - Sysmon Read Error (Restarting watcher): EvtRender() argument 2 must be int, not PyEventLogRecord
+2026-05-18 12:24:38,022 - [INFO] - Database retention cleanup completed.
