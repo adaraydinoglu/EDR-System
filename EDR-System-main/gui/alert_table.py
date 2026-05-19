@@ -30,9 +30,10 @@ COLUMNS = ["Zaman", "İncident Adı", "Şiddet", "Root PID", "Alarm Sayısı", "
 class IncidentDetailDialog(QDialog):
     def __init__(self, incident_dict, parent=None):
         super().__init__(parent)
+        self.incident_dict = incident_dict
         name = incident_dict.get('incident_name', 'Bilinmeyen İncident')
         self.setWindowTitle(f"İncident Detayı — {name}")
-        self.setMinimumSize(700, 500)
+        self.setMinimumSize(750, 550)
         layout = QVBoxLayout(self)
 
         text = QTextEdit()
@@ -42,6 +43,7 @@ class IncidentDetailDialog(QDialog):
         tactics = incident_dict.get("tactics", [])
         mitre_ids = incident_dict.get("mitre_ids", [])
         network_info = incident_dict.get("network_info", [])
+        ai_exp = incident_dict.get("ai_explanation", "Yapay zeka değerlendirmesi bulunmuyor.")
         
         detail = (
             f"İNCİDENT ADI    : {name}\n"
@@ -54,6 +56,8 @@ class IncidentDetailDialog(QDialog):
             f"MITRE ID'LER    : {', '.join(mitre_ids) if mitre_ids else '-'}\n"
             f"\n--- SÜREÇ ZİNCİRİ ---\n"
             f"{' → '.join(ancestry) if ancestry else 'Bilinmiyor'}\n"
+            f"\n--- YAPAY ZEKA ANALİZİ ---\n"
+            f"{ai_exp}\n"
             f"\n--- AĞ BAĞLANTILARI ---\n"
         )
         
@@ -69,9 +73,50 @@ class IncidentDetailDialog(QDialog):
         text.setPlainText(detail)
         layout.addWidget(text)
 
-        close_btn = QPushButton("Kapat")
-        close_btn.clicked.connect(self.accept)
-        layout.addWidget(close_btn, alignment=Qt.AlignmentFlag.AlignRight)
+        # Butonlar
+        btn_layout = QHBoxLayout()
+        
+        self.whitelist_btn = QPushButton("✅ Beyaz Listeye Ekle")
+        self.whitelist_btn.setStyleSheet("background-color: #2a4a2a; color: white;")
+        self.whitelist_btn.clicked.connect(self._whitelist_process)
+        
+        self.kill_btn = QPushButton("❌ Süreci Sonlandır")
+        self.kill_btn.setStyleSheet("background-color: #4a2a2a; color: white;")
+        self.kill_btn.clicked.connect(self._kill_process)
+
+        self.close_btn = QPushButton("Kapat")
+        self.close_btn.clicked.connect(self.accept)
+
+        btn_layout.addWidget(self.whitelist_btn)
+        btn_layout.addWidget(self.kill_btn)
+        btn_layout.addStretch()
+        btn_layout.addWidget(self.close_btn)
+        
+        layout.addLayout(btn_layout)
+
+    def _kill_process(self):
+        pid = self.incident_dict.get("root_pid")
+        if pid:
+            try:
+                import psutil
+                psutil.Process(pid).kill()
+                self.kill_btn.setText("Süreç Sonlandırıldı")
+                self.kill_btn.setEnabled(False)
+            except Exception as e:
+                self.kill_btn.setText(f"Hata: {e}")
+
+    def _whitelist_process(self):
+        root_proc = self.incident_dict.get("ancestry_chain", [])
+        if root_proc:
+            proc_name = root_proc[0]
+            try:
+                import core.filters
+                if proc_name not in core.filters.WHITELISTED_SYSTEM_PROCESSES:
+                    core.filters.WHITELISTED_SYSTEM_PROCESSES.append(proc_name)
+                self.whitelist_btn.setText("Eklendi")
+                self.whitelist_btn.setEnabled(False)
+            except Exception:
+                pass
 
 
 class AlertTable(QWidget):

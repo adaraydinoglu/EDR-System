@@ -69,13 +69,19 @@ class RiskEngine:
         cmdline   = event.cmdline.lower()
         path      = event.path.lower()
 
-        # 1. Base process risk
-        score += RiskEngine.PROCESS_RISK.get(proc_name, 0)
+        # 1. Base process risk (Only on process creation to prevent inflation)
+        if event.event_type == EventType.PROCESS_CREATE:
+            score += RiskEngine.PROCESS_RISK.get(proc_name, 0)
 
-        # 2. Commandline modifiers
-        for risk_delta, tokens in RiskEngine.CMDLINE_RISKS:
-            if any(tok in cmdline for tok in tokens):
-                score += risk_delta
+            # 2. Commandline modifiers (Cmdline usually only exists on creation or specific events)
+            for risk_delta, tokens in RiskEngine.CMDLINE_RISKS:
+                if any(tok in cmdline for tok in tokens):
+                    score += risk_delta
+        elif cmdline and event.event_type != EventType.PROCESS_CREATE:
+             # Evaluate cmdline if it exists on non-creation events (e.g. some Sysmon logs)
+             for risk_delta, tokens in RiskEngine.CMDLINE_RISKS:
+                if any(tok in cmdline for tok in tokens):
+                    score += risk_delta
 
         # 3. Path modifiers — skip for trusted processes (browsers write to temp/appdata constantly)
         is_trusted = proc_name in RiskEngine.TRUSTED_PROCESSES
